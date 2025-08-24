@@ -1,0 +1,122 @@
+---
+title: "epi590r_finalproject_dunkley"
+author: "Janae Dunkley"
+format: html
+editor: visual
+---
+
+## Loading Packages
+
+```{r}
+install.packages("tidyverse")
+install.packages("here")
+install.packages("gtsummary")
+install.packages("gtsummary", dependencies = TRUE)
+install.packages("dplyr")
+install.packages("ggplot2")
+library(gtsummary)
+library(tidyverse)
+library(here)
+library(dplyr)
+library(ggplot2)
+```
+
+## Importing and cleaning data
+
+```{r}
+penguins <- read_csv(here::here("data", "penguins_size.csv"))
+penguins <- penguins %>%
+	mutate(sex = na_if(sex, "."))
+```
+
+## Final Project Objectives
+
+1.  Create a `{gtsummary}` table of descriptive statistics about your data (1 pt)
+
+    ```{r}
+    tbl_summary(
+    	penguins,
+    	by = species,
+    	include = c(sex, island,
+    							culmen_length_mm, culmen_depth_mm, flipper_length_mm),
+    	label = list(
+    		sex ~ "Sex",
+    		island ~ "Island",
+    		culmen_length_mm ~ "Culmen Length (mm)",
+    		culmen_depth_mm ~ "Culmen depth (mm)",
+    		flipper_length_mm ~ "Flipper Length (mm)"
+    	),
+    	statistic = list(all_continuous() ~ "{median} ({p25}, {p75})",
+    									all_categorical() ~ "{n} ({p}%)"),
+    	missing_text = "Missing") |>
+    	add_overall(col_label = "**Total**") |>
+    	bold_labels() |>
+    	modify_header(label = "**Variable**")
+    ```
+
+2.  Fit a regression and present well-formatted results from the regression (1 pt)
+
+    -   The regression doesn’t have to be of any particular scientific interest, and you don’t have to interpret it in any particular way
+
+    -   You may use `{gtsummary}` or `{broom}` or both
+
+```{r}
+linear_model <- lm(flipper_length_mm ~ culmen_length_mm + culmen_depth_mm,
+									 data = penguins)
+
+summary(linear_model)
+
+tbl_regression(
+	linear_model,
+	intercept = TRUE,
+	label = list(
+		culmen_length_mm ~ "Culmen Length (mm)",
+		culmen_depth_mm ~ "Culmen depth (mm)"
+	))
+```
+
+3.  Create a figure (1 pt)
+    -   It doesn’t need to look pretty; feel free to adapt some of the examples from class, which were as simple as `hist(data$variable)` and as complicated as the forest plot in the `{broom}` section
+
+    -   Feel free to look at some of the `ggplot2` material from [another course I taught](https://id543.louisahsmith.com/pages/day_4)
+
+```{r}
+species_islands<-ggplot(penguins, aes(x=island, fill=species))+
+	geom_bar(position="fill")
+
+#Saving figure
+
+ggsave(plot = species_islands,
+			 filename = here::here("figures", "figure1.pdf"))
+```
+
+4.  Write *and* use a function that does something with the data (1 pt)
+    -   It could be as simple as, for example, a new function to calculate a statistic for different variables, or a function that takes a dataframe and returns a summary table or fits a regression
+
+```{r}
+variance <- function(x) {
+
+	n <- length(x)
+	mean_x<- sum(x) / n
+	dev<-x-mean_x
+	squares<- (dev)^2
+	summation<-sum(squares)
+	vari<-summation/(n-1)
+
+
+	if (n>1){vari<-vari}
+	else {vari<-NA}
+	return(vari)
+
+}
+
+#checking
+
+m<-c(400,200,300,500,700)
+q<-500
+
+variance(m)
+var(m)
+variance(q)
+var(q)
+```
