@@ -57,10 +57,10 @@ tbl_regression(
 		culmen_depth_mm ~ "Culmen depth (mm)"
 	))
 
-#For each 1-unit increase in culmen length, flipper length increases by 1.4
-#if culmen depth is held constant. Significant (p < 0.001)
+#For each 1-unit (mm) increase in culmen length, flipper length increases by 1.4 mm,
+#controlling for culmen depth (p < 0.001)
 
-#Create a figure (1 pt)
+#Objective 3:Create a figure (1 pt)
 #It doesn’t need to look pretty; feel free to adapt some of the examples from
 #class, which were as simple as hist(data$variable) and as complicated as the
 #forest plot in the {broom} section
@@ -68,3 +68,38 @@ tbl_regression(
 
 ggplot(penguins, aes(x=island, fill=species))+
 	geom_bar(position="fill")
+
+
+#Objective 4:Write and use a function that does something with the data (1 pt)
+#It could be as simple as, for example, a new function to calculate a statistic
+#for different variables, or a function that takes a dataframe and returns a
+#summary table or fits a regression
+
+variance <- function(x) {
+
+	n <- length(x)
+	mean_x<- sum(x) / n
+	dev<-x-mean_x
+	squares<- (dev)^2
+	summation<-sum(squares)
+	vari<-summation/(n-1)
+
+
+	if (n>1){vari<-vari}
+	else {vari<-NA}
+	return(vari)
+
+}
+
+#checking
+
+m<-c(400,200,300,500,700)
+q<-500
+
+variance(m)
+var(m)
+variance(q)
+var(q)
+
+
+
