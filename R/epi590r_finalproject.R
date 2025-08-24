@@ -19,7 +19,7 @@ penguins <- penguins %>%
 #Objective 1: Create a {gtsummary} table of descriptive statistics about
 #your data (1 pt)
 
-tbl_summary(
+tableone<-tbl_summary(
 	penguins,
 	by = species,
 	include = c(sex, island,
@@ -32,11 +32,13 @@ tbl_summary(
 		flipper_length_mm ~ "Flipper Length (mm)"
 	),
 	statistic = list(all_continuous() ~ "{median} ({p25}, {p75})",
-									all_categorical() ~ "{n} ({p}%)"),
+									 all_categorical() ~ "{n} ({p}%)"),
 	missing_text = "Missing") |>
 	add_overall(col_label = "**Total**") |>
 	bold_labels() |>
 	modify_header(label = "**Variable**")
+
+tableone
 
 #Objective 2: Fit a regression and present well-formatted results from the
 #regression (1 pt)
@@ -47,15 +49,16 @@ tbl_summary(
 linear_model <- lm(flipper_length_mm ~ culmen_length_mm + culmen_depth_mm,
 									 data = penguins)
 
-summary(linear_model)
 
-tbl_regression(
+tabletwo<-tbl_regression(
 	linear_model,
 	intercept = TRUE,
 	label = list(
 		culmen_length_mm ~ "Culmen Length (mm)",
 		culmen_depth_mm ~ "Culmen depth (mm)"
 	))
+
+tabletwo
 
 #For each 1-unit (mm) increase in culmen length, flipper length increases by 1.4 mm,
 #controlling for culmen depth (p < 0.001)
@@ -73,6 +76,8 @@ species_islands<-ggplot(penguins, aes(x=island, fill=species))+
 
 ggsave(plot = species_islands,
 			 filename = here::here("figures", "figure1.pdf"))
+
+species_islands
 
 
 #Objective 4:Write and use a function that does something with the data (1 pt)

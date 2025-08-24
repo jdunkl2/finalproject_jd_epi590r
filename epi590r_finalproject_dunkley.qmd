@@ -2,12 +2,15 @@
 title: "epi590r_finalproject_dunkley"
 author: "Janae Dunkley"
 format: html
+theme: lux
 editor: visual
 ---
 
 ## Loading Packages
 
 ```{r}
+#| warning: false
+#| message: false
 install.packages("tidyverse")
 install.packages("here")
 install.packages("gtsummary")
@@ -31,10 +34,10 @@ penguins <- penguins %>%
 
 ## Final Project Objectives
 
-1.  Create a `{gtsummary}` table of descriptive statistics about your data (1 pt)
+1.  **Create a `{gtsummary}` table of descriptive statistics about your data (1 pt)**
 
     ```{r}
-    tbl_summary(
+    tableone<-tbl_summary(
     	penguins,
     	by = species,
     	include = c(sex, island,
@@ -54,19 +57,24 @@ penguins <- penguins %>%
     	modify_header(label = "**Variable**")
     ```
 
-2.  Fit a regression and present well-formatted results from the regression (1 pt)
+    ```{r}
+    #| label: tbl-one
+    #| tbl-cap: "Descriptive statistics stratified by species"
+    tableone
+    ```
 
-    -   The regression doesn’t have to be of any particular scientific interest, and you don’t have to interpret it in any particular way
+2.  **Fit a regression and present well-formatted results from the regression (1 pt)**
 
-    -   You may use `{gtsummary}` or `{broom}` or both
+    -   **The regression doesn’t have to be of any particular scientific interest, and you don’t have to interpret it in any particular way**
+
+    -   **You may use `{gtsummary}` or `{broom}` or both**
 
 ```{r}
 linear_model <- lm(flipper_length_mm ~ culmen_length_mm + culmen_depth_mm,
 									 data = penguins)
 
-summary(linear_model)
 
-tbl_regression(
+tabletwo<-tbl_regression(
 	linear_model,
 	intercept = TRUE,
 	label = list(
@@ -75,8 +83,16 @@ tbl_regression(
 	))
 ```
 
-3.  Create a figure (1 pt)
-    -   It doesn’t need to look pretty; feel free to adapt some of the examples from class, which were as simple as `hist(data$variable)` and as complicated as the forest plot in the `{broom}` section
+```{r}
+#| label: tbl-two
+#| tbl-cap: "Linear regression table"
+tabletwo
+```
+
+*For each 1-unit (mm) increase in culmen length, flipper length increases by 1.4 mm, controlling for culmen depth (p \< 0.001)*
+
+3.  **Create a figure (1 pt)**
+    -   **It doesn’t need to look pretty; feel free to adapt some of the examples from class, which were as simple as `hist(data$variable)` and as complicated as the forest plot in the `{broom}` section**
 
     -   Feel free to look at some of the `ggplot2` material from [another course I taught](https://id543.louisahsmith.com/pages/day_4)
 
@@ -84,14 +100,21 @@ tbl_regression(
 species_islands<-ggplot(penguins, aes(x=island, fill=species))+
 	geom_bar(position="fill")
 
+
 #Saving figure
 
 ggsave(plot = species_islands,
 			 filename = here::here("figures", "figure1.pdf"))
 ```
 
-4.  Write *and* use a function that does something with the data (1 pt)
-    -   It could be as simple as, for example, a new function to calculate a statistic for different variables, or a function that takes a dataframe and returns a summary table or fits a regression
+```{r}
+#| label: fig-bar
+#| fig-cap: "Distribution of peguin species by island of origin"
+species_islands
+```
+
+4.  **Write *and* use a function that does something with the data (1 pt)**
+    -   **It could be as simple as, for example, a new function to calculate a statistic for different variables, or a function that takes a dataframe and returns a summary table or fits a regression**
 
 ```{r}
 variance <- function(x) {
@@ -120,3 +143,9 @@ var(m)
 variance(q)
 var(q)
 ```
+
+*This project examined data from the palmerpenguins dataset which contains data for three penguin species observed in the Palmer Archipelago, Antarctica, collected by Dr. Kristen Gorman with Palmer Station LTER. There were `r nrow(penguins)` observations within the dataset. Overall, the median culmen length (mm), culmen depth (mm), and flipper length (mm) for the penguins were `r inline_text(tableone, variable = "culmen_length_mm", column = "stat_0")`, `r inline_text(tableone, variable = "culmen_depth_mm", column = "stat_0")`, and `r inline_text(tableone, variable = "flipper_length_mm", column = "stat_0")`, respectively. @tbl-one displays descriptive statistics stratified by penguin species. @tbl-two contains a linear regression table. @fig-bar contains a bar chart displaying the distribution of penguin species by island of origin.*
+
+Source: [Palmer Archipelago (Antarctica) penguin data](https://www.kaggle.com/datasets/parulpandey/palmer-archipelago-antarctica-penguin-data?resource=download&select=penguins_size.csv)
+
+Citation: Gorman KB, Williams TD, Fraser WR (2014) Ecological Sexual Dimorphism and Environmental Variability within a Community of Antarctic Penguins (Genus *Pygoscelis*). PLoS ONE 9(3): e90081. doi:10.1371/journal.pone.0090081
