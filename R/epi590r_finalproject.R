@@ -66,8 +66,13 @@ tbl_regression(
 #forest plot in the {broom} section
 #Feel free to look at some of the ggplot2 material from another course I taught
 
-ggplot(penguins, aes(x=island, fill=species))+
+species_islands<-ggplot(penguins, aes(x=island, fill=species))+
 	geom_bar(position="fill")
+
+#Saving figure
+
+ggsave(plot = species_islands,
+			 filename = here::here("figures", "figure1.pdf"))
 
 
 #Objective 4:Write and use a function that does something with the data (1 pt)
